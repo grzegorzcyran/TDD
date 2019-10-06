@@ -120,7 +120,7 @@ public class BankTest {
 
 	//test wpłaty dla nieistniejącego klienta
 	@Test
-	public void shouldReturnTrueWhenDepositOnNonExistingClient(){
+	public void shouldReturnFalseWhenDepositOnNonExistingClient(){
 		Client client = new Client("Adam", "Kowalski");
 		bank1.addClient(client);
 		bank1.addAccount("1", AccountKind.CURRENT_ACCOUNT);
@@ -130,4 +130,43 @@ public class BankTest {
 
 	}
 
+	@Test
+	public void shouldReturnFalseWhenWithdrawOnNonExistingClient(){
+		Client client = new Client("Adam", "Kowalski");
+		bank1.addClient(client);
+		bank1.addAccount("1", AccountKind.CURRENT_ACCOUNT);
+		bank1.printClients(true);
+		boolean isWithdraw = bank1.withdrawMoney("3", "iban_4", 20);
+		assertEquals(false, isWithdraw, "Should return false when withdraw from not existing client");
+	}
+
+	@Test
+	public void shouldReturnFalseWhenWithdrawOnExistingClientFromNotExistingAccount(){
+		Client client = new Client("Adam", "Kowalski");
+		bank1.addClient(client);
+		bank1.addAccount("1", AccountKind.CURRENT_ACCOUNT);
+		bank1.printClients(true);
+		boolean isWithdraw = bank1.withdrawMoney("1", "iban_4", 20);
+		assertEquals(false, isWithdraw, "Should return false when withdraw from not existing account");
+	}
+
+	@Test
+	public void shouldReturnFalseWhenWithdrawTooMuchOnExistingClientFromExistingAccount(){
+		Client client = new Client("Adam", "Kowalski");
+		bank1.addClient(client);
+		bank1.addAccount("1", AccountKind.CURRENT_ACCOUNT);
+		bank1.printClients(true);
+		boolean isWithdraw = bank1.withdrawMoney("1", "iban0", 20);
+		assertEquals(false, isWithdraw, "Should return false when withdraw more then on account");
+	}
+	@Test
+	public void shouldReturnTrueWhenWithdrawOnExistingClientFromExistingAccount(){
+		Client client = new Client("Adam", "Kowalski");
+		bank1.addClient(client);
+		bank1.addAccount("1", AccountKind.CURRENT_ACCOUNT);
+		bank1.printClients(true);
+		bank1.depositMoney("1", "iban0", 50);
+		boolean isWithdraw = bank1.withdrawMoney("1", "iban0", 20);
+		assertEquals(true, isWithdraw, "Should return true when withdraw less then on account");
+	}
 }
